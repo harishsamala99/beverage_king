@@ -125,12 +125,22 @@ const Index = () => {
                 </Button>
               </>
             ) : (
-              <Button
-                onClick={() => setAuthDialogOpen(true)}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-              >
-                Sign In
-              </Button>
+              <>
+                <Button
+                  onClick={() => setAuthDialogOpen(true)}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  onClick={() => window.location.href = '/admin/login'}
+                  variant="outline"
+                  size="sm"
+                  className="border-primary/30 hover:bg-primary/10"
+                >
+                  Admin
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -173,14 +183,8 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-border">
-        <div className="container mx-auto text-center">
-          <p className="text-muted-foreground">© 2024 Beverage King. All rights reserved.</p>
-          <button
-            onClick={() => window.location.href = '/admin/login'}
-            className="text-xs text-muted-foreground/50 hover:text-muted-foreground mt-2 transition-colors"
-          >
-            Admin
-          </button>
+        <div className="container mx-auto text-center text-muted-foreground">
+          <p>© 2024 Beverage King. All rights reserved.</p>
         </div>
       </footer>
 
