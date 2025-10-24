@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"],
+  darkMode: "class", // Updated to use a valid DarkModeStrategy
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
@@ -80,10 +80,25 @@ export default {
             height: "0",
           },
         },
+        "fill-glass": {
+          "0%": {
+            height: "0%",
+            opacity: "0.5",
+          },
+          "50%": {
+            height: "85%",
+            opacity: "0.8",
+          },
+          "100%": {
+            height: "80%",
+            opacity: "0.8",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fill-glass": "fill-glass 2s ease-in-out infinite",
       },
     },
   },

@@ -1,20 +1,14 @@
-# Welcome to your Lovable project
+# Beverage King Insiders Club
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/0c7fbaac-4b5c-4d7d-bd1e-3863976b0f35
+A VIP platform for Beverage King's most valued customers to access exclusive barrel drops, special releases, and limited bottles.
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/0c7fbaac-4b5c-4d7d-bd1e-3863976b0f35) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
+**Development**
 
 If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
