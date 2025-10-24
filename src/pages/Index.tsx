@@ -173,8 +173,14 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-border">
-        <div className="container mx-auto text-center text-muted-foreground">
-          <p>© 2024 Beverage King. All rights reserved.</p>
+        <div className="container mx-auto text-center">
+          <p className="text-muted-foreground">© 2024 Beverage King. All rights reserved.</p>
+          <button
+            onClick={() => window.location.href = '/admin/login'}
+            className="text-xs text-muted-foreground/50 hover:text-muted-foreground mt-2 transition-colors"
+          >
+            Admin
+          </button>
         </div>
       </footer>
 
