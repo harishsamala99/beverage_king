@@ -152,29 +152,7 @@ const Index = () => {
         {/* Main content */}
         <main className="pt-16">
           <Hero onGetStarted={() => !user && setAuthDialogOpen(true)} />
-          {user ? (
-            <PointsDisplay points={points} totalEarned={totalEarned} />
-          ) : (
-            <div className="py-16 px-4 text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl font-bold mb-4">
-                Join the Insiders Club
-              </h2>
-              <p className="text-muted-foreground mb-6 text-lg">
-                This is your VIP pass to everything happening at the crown jewel of spirits. 
-                Join the Insiders Club today - and never miss a drop again.
-              </p>
-              <p className="text-muted-foreground mb-8 text-base">
-                Ask the cashier how to sign up, or simply join during checkout!
-              </p>
-              <Button
-                onClick={() => setAuthDialogOpen(true)}
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-              >
-                Sign Up Now
-              </Button>
-            </div>
-          )}
+          {user && <PointsDisplay points={points} totalEarned={totalEarned} />}
           <DiscordSection />
         </main>
 

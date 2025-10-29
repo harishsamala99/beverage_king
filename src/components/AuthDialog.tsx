@@ -26,6 +26,7 @@ export const AuthDialog = ({ open, onOpenChange, onSuccess }: AuthDialogProps) =
     const email = formData.get("signup-email") as string;
     const password = formData.get("signup-password") as string;
     const fullName = formData.get("full-name") as string;
+    const mobileNumber = formData.get("mobile-number") as string;
 
     if (!email || !password) {
       toast({
@@ -43,6 +44,7 @@ export const AuthDialog = ({ open, onOpenChange, onSuccess }: AuthDialogProps) =
       options: {
         data: {
           full_name: fullName,
+          mobile_number: mobileNumber,
         },
         emailRedirectTo: `${window.location.origin}/`,
       },
@@ -171,6 +173,16 @@ export const AuthDialog = ({ open, onOpenChange, onSuccess }: AuthDialogProps) =
                   name="full-name"
                   type="text"
                   placeholder="John Doe"
+                  className="bg-background"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="mobile-number">Mobile Number (Optional)</Label>
+                <Input
+                  id="mobile-number"
+                  name="mobile-number"
+                  type="tel"
+                  placeholder="+1 (555) 123-4567"
                   className="bg-background"
                 />
               </div>

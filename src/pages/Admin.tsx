@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogOut, Plus, RotateCcw, Shield } from "lucide-react";
+import { LogOut, Plus, RotateCcw, Shield, Upload } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +28,7 @@ interface CustomerData {
   user_id: string;
   email: string;
   full_name: string | null;
+  mobile_number: string | null;
   points: number;
   total_earned: number;
 }
@@ -38,6 +39,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [editingCustomer, setEditingCustomer] = useState<CustomerData | null>(null);
   const [newPoints, setNewPoints] = useState("");
+  const [csvDialogOpen, setCsvDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -82,7 +84,7 @@ const Admin = () => {
         user_id,
         points,
         total_earned,
-        profiles!inner(email, full_name)
+        profiles!inner(email, full_name, mobile_number)
       `)
       .order("total_earned", { ascending: false });
 
@@ -98,6 +100,7 @@ const Admin = () => {
         user_id: item.user_id,
         email: item.profiles.email,
         full_name: item.profiles.full_name,
+        mobile_number: item.profiles.mobile_number,
         points: item.points,
         total_earned: item.total_earned,
       }));
@@ -173,6 +176,78 @@ const Admin = () => {
     navigate("/admin/login");
   };
 
+  const handleCsvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target?.result as string;
+      const rows = text.split('\n').map(row => row.split(','));
+      
+      // Skip header row
+      const dataRows = rows.slice(1).filter(row => row.length >= 4);
+      
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const row of dataRows) {
+        const [email, fullName, mobileNumber, points] = row.map(cell => cell.trim());
+        
+        if (!email) continue;
+
+        try {
+          // Check if user exists
+          const { data: profileData } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("email", email)
+            .maybeSingle();
+
+          if (profileData) {
+            // Update existing user
+            await supabase
+              .from("profiles")
+              .update({ 
+                full_name: fullName || null,
+                mobile_number: mobileNumber || null
+              })
+              .eq("id", profileData.id);
+
+            if (points) {
+              const pointsNum = parseInt(points);
+              if (!isNaN(pointsNum)) {
+                await supabase
+                  .from("customer_points")
+                  .update({ 
+                    points: pointsNum,
+                    total_earned: pointsNum 
+                  })
+                  .eq("user_id", profileData.id);
+              }
+            }
+            successCount++;
+          } else {
+            errorCount++;
+          }
+        } catch (error) {
+          console.error(`Error processing row for ${email}:`, error);
+          errorCount++;
+        }
+      }
+
+      toast({
+        title: "CSV Import Complete",
+        description: `Successfully updated ${successCount} customers. ${errorCount} errors.`,
+      });
+
+      fetchCustomers();
+      setCsvDialogOpen(false);
+    };
+
+    reader.readAsText(file);
+  };
+
   if (isAdmin === null || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -205,10 +280,18 @@ const Admin = () => {
       <main className="container mx-auto px-4 py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Customer Points Overview</CardTitle>
-            <CardDescription>
-              View and manage customer points for all Insiders Club members
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Customer Points Overview</CardTitle>
+                <CardDescription>
+                  View and manage customer points for all Insiders Club members
+                </CardDescription>
+              </div>
+              <Button onClick={() => setCsvDialogOpen(true)} variant="outline">
+                <Upload className="w-4 h-4 mr-2" />
+                Import CSV
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {customers.length === 0 ? (
@@ -224,6 +307,7 @@ const Admin = () => {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Mobile</TableHead>
                     <TableHead className="text-right">Current Points</TableHead>
                     <TableHead className="text-right">Total Earned</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -236,6 +320,7 @@ const Admin = () => {
                         {customer.full_name || "N/A"}
                       </TableCell>
                       <TableCell>{customer.email}</TableCell>
+                      <TableCell>{customer.mobile_number || "N/A"}</TableCell>
                       <TableCell className="text-right font-semibold">
                         {customer.points.toLocaleString()}
                       </TableCell>
@@ -304,6 +389,32 @@ const Admin = () => {
             </Button>
             <Button onClick={handleUpdatePoints}>Update Points</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Import Customer Data from CSV</DialogTitle>
+            <DialogDescription>
+              Upload a CSV file with columns: Email, Full Name, Mobile Number, Points
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="csv-file">CSV File</Label>
+              <Input
+                id="csv-file"
+                type="file"
+                accept=".csv"
+                onChange={handleCsvUpload}
+                className="cursor-pointer"
+              />
+              <p className="text-xs text-muted-foreground">
+                CSV format: Email, Full Name, Mobile Number, Points (header row required)
+              </p>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
